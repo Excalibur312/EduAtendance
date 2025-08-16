@@ -1,0 +1,17 @@
+﻿namespace EduAtendance.WebAPI.Models;
+
+
+//Classlar tekil halinde yazılır.
+public class Student
+{
+    public Student()
+    {
+        Id = Guid.CreateVersion7();
+    }
+    public Guid Id { get; set; }
+    public string FirstName { get; set; } = default!;
+    public string LastName { get; set; } = default!;
+    public string IdentityNumber { get; set; } = default!;
+    public string PhoneNumber { get; set; } = default!;
+    public string Email { get; set; } = default!;
+}
