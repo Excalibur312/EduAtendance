@@ -7,15 +7,16 @@ using EduAtendance.WebAPI.Dtos;
 using Mapster;
 using EduAtendance.WebAPI.Validators;
 using FluentValidation.Results;
+using EduAtendance.WebAPI.Tools;
 
 namespace EduAtendance.WebAPI.Controllers;
+
 [Route("[Controller]")]
 [ApiController]
 public sealed class StudentsController : ControllerBase
 {
+    private readonly ApplicationDbContext _dbContext;
 
-
-    ApplicationDbContext _dbContext;
     public StudentsController(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
@@ -29,36 +30,35 @@ public sealed class StudentsController : ControllerBase
 
         return Ok(students);
     }
-    [HttpPost]
 
+    [HttpPost]
     public async Task<IActionResult> Create(CreateStudentDto request, CancellationToken cancellationToken)
     {
-
+        var res = new Result();
         CreateStudentDtoValidator validator = new();
         ValidationResult validationResult = validator.Validate(request);
-        if (validationResult.IsValid==false)
-        {
-           var messages =validationResult.Errors.Select(s=>s.ErrorMessage).ToList();
-           return BadRequest(messages);
 
+        if (!validationResult.IsValid)
+        {
+            Result.Fail(validationResult.Errors.Select(s => s.ErrorMessage).ToList());
+            return BadRequest(res);
         }
 
-        //var isIdentityNumberExists  = await _dbContext.Students.AnyAsync(p=> p.IdentityNumber == request.IdentityNumber, cancellationToken);
-        //if(isIdentityNumberExists == true)
-        //{
-        //    return BadRequest("Öğrencinin TC'si daha önce kaydedilmiş"); 
-        //}
+        var isIdentityNumberExists = await _dbContext.Students
+            .AnyAsync(p => p.IdentityNumber == request.IdentityNumber, cancellationToken);
 
-       
+        if (isIdentityNumberExists)
+        {
+            
+            return BadRequest(Result.Fail("Öğrencinin TC'si daha önce kaydedilmiş"));
+        }
+
         Student student = request.Adapt<Student>();
         _dbContext.Add(student);
         await _dbContext.SaveChangesAsync(cancellationToken);
-        return Ok("Kayıt Tamamlandı");
-         
+        return Ok(Result.Succeed("Kayıt Tamamlandı"));
     }
 
+    
+
 }
-
-
-
-
