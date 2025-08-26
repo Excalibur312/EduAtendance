@@ -10,7 +10,7 @@ using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
     {
-        opt.UseSqlServer("Data Source=DESKTOP-EA5G3OE;Initial Catalog=EduAttendaceDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+        opt.UseSqlServer("YOURSERVER");
 
     });
 
