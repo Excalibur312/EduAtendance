@@ -2,6 +2,10 @@
 
 public class Result
 {
+
+    private List<string> _Message = new();
+    public IReadOnlyCollection<string> Messages => _Message.ToArray();
+
     public Result()
     {
 
@@ -11,27 +15,26 @@ public class Result
         Add(message);
     }
 
-    public static Result Succeed (string message)
+    public static Result Succeed(string message)
     {
         var res = new Result();
         res.Add(message);
         return res;
     }
-    public static Result Fail( List<string> message)
+    public static Result Fail(List<string> message)
     {
         var res = new Result();
         res.Add(message);
         return res;
     }
-    public static Result Fail( string  message)
+    public static Result Fail(string message)
     {
         var res = new Result();
         res.Add(message);
         return res;
     }
 
-    private List<string> _Message = new();
-    public IReadOnlyCollection<string> Messages => _Message.ToArray();
+
     public void Add(string message)
     {
         _Message.Add(message);
