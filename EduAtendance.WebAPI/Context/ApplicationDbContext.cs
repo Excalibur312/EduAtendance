@@ -16,6 +16,7 @@ public sealed class ApplicationDbContext: DbContext
     public DbSet<SurveyTemplate> SurveyTemplates { get; set; }
     public DbSet<Student> Students { get; set; }
 
+    public DbSet<MenuTemplate> MenuTemplates { get; set; }
 
 
 
@@ -29,5 +30,38 @@ public sealed class ApplicationDbContext: DbContext
                 cb.OwnsMany(c => c.Options);
             });
         });
+
+ 
+        // MenuTemplate
+        modelBuilder.Entity<MenuTemplate>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Title).IsRequired();
+
+            entity.HasMany(x => x.Submenus)
+                  .WithOne()
+                  .HasForeignKey("MenuTemplateId")
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Submenu (self-referencing)
+        modelBuilder.Entity<MenuTemplateSubmenu>(entity =>
+        {
+            entity.HasKey(x => x.Title); // Title tekil olmalı veya Id ekleyebilirsin
+
+            entity.HasMany(x => x.Submenus)
+                  .WithOne()
+                  .HasForeignKey("ParentId")
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            // Items → string listesi yerine ayrı entity önerilir
+            entity.OwnsMany(x => x.Items, items =>
+            {
+                items.WithOwner().HasForeignKey("SubmenuId");
+                items.Property(i => i.Name).IsRequired();
+            });
+        });
     }
+
 }
+ 
